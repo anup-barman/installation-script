@@ -1,8 +1,11 @@
-#inlcude "bits/stdc++.h"
+#include <bits/stdc++.h>
 using namespace std;
+#define ll long long
 
 int main() {
-	int n;
-	cin >> n;
-	cout << n << "\n";
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+	string s;
+    cout << s << endl;
+    return 0;
 }
