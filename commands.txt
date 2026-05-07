@@ -1,2 +1,2 @@
 sudo apt update
-sudo apt install build-essential codeblocks
+sudo apt install build-essential codeblocks codeblocks-contrib
