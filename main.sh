@@ -1,33 +1,37 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status
 set -e
 
-echo "Updating package lists..."
+echo "--- Updating package list (Update Only) ---"
 sudo apt update
 
-echo "Installing prerequisites..."
-sudo apt install -y wget gpg software-properties-common apt-transport-https
+echo "--- Installing Build-Essential ---"
+sudo apt install -y build-essential
 
-echo "Adding VS Code repository..."
-wget -qO- https://packages.microsoft.com/keys/microsoft.asc | \
-gpg --dearmor | \
-sudo tee /usr/share/keyrings/packages.microsoft.gpg > /dev/null
+echo "--- Installing Code::Blocks ---"
+sudo apt install -y codeblocks codeblocks-contrib
 
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | \
-sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
+echo "--- Preparing for External Repositories (VS Code & Sublime) ---"
+sudo apt install -y wget gpg apt-transport-https
 
-echo "Adding Sublime Text repository..."
-wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | \
-gpg --dearmor | \
-sudo tee /usr/share/keyrings/sublimehq.gpg > /dev/null
+# --- Visual Studio Code Setup ---
+echo "--- Adding VS Code Repository ---"
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+rm -f packages.microsoft.gpg
 
-echo "deb [signed-by=/usr/share/keyrings/sublimehq.gpg] https://download.sublimetext.com/ apt/stable/" | \
-sudo tee /etc/apt/sources.list.d/sublime-text.list > /dev/null
+# --- Sublime Text 4 Setup ---
+echo "--- Adding Sublime Text Repository ---"
+wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/keyrings/sublimehq-archive.gpg > /dev/null
+echo "deb [signed-by=/etc/apt/keyrings/sublimehq-archive.gpg] https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
 
-echo "Updating package lists again..."
+echo "--- Final Update and Installation ---"
 sudo apt update
+sudo apt install -y code sublime-text
 
-echo "Installing packages..."
-sudo apt install -y build-essential codeblocks sublime-text code
-
-echo "Done."
+echo "----------------------------------------------"
+echo "Installation Complete!"
+echo "Installed: build-essential, codeblocks, vscode, sublime-text"
+echo "----------------------------------------------"
